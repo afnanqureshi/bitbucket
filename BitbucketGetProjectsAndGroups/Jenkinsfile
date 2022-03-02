@@ -1,0 +1,21 @@
+pipeline {
+	agent any
+    stages {
+        stage('SCM Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'jenkins_credentials_for_bitbucket_access', url: 'git@github.com:afnanqureshi/bitbucket.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'jenkins_credentials_for_bitbucket_access', variable: 'token')]) {
+                        sh '''#!/bin/bash
+                            groovy BitbucketGetProjectsAndGroups/GetBBNameandGroups.groovy
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
